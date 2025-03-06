@@ -1,0 +1,22 @@
+$menuHeight: 4rem;
+
+.scene-player-embedded-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+
+  @media (min-width: 1200px) {
+    height: 100vh;
+  }
+
+  max-height: calc(100vh - #{$menuHeight});
+  padding-bottom: 0.25rem;
+}
+
+.scene-player-embedded {
+  border: 0;
+  
+  width: 100%;
+  height: 56.25vw;
+}

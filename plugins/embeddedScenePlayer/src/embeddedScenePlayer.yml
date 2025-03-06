@@ -1,0 +1,15 @@
+name: Embedded Scene Player
+description: Detects embed URLs for file-less scenes and shows them in the scene player.
+url: https://github.com/WithoutPants/stash-plugin-prototypes
+version: 1.0
+ui:
+  javascript:
+  - embeddedScenePlayer.js
+  css:
+  - embeddedScenePlayer.css
+
+settings:
+  urls:
+    displayName: URLs
+    type: STRING
+
