@@ -70,8 +70,6 @@ function parseEmbeddableURLs(urls: string) {
   const React = PluginApi.React;
 
   PluginApi.patch.instead("ScenePlayer", function (props: any, _: any, original: any) {
-    console.log("embeddedScenePlayer patch");
-
     const { data, error, loading } = PluginApi.utils.StashService.useConfiguration();
     
     const scene: SceneDataFragment = props.scene;
