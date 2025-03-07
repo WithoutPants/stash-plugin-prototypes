@@ -69,14 +69,10 @@ function parseEmbeddableURLs(urls: string) {
   const PluginApi = (window as any).PluginApi as IPluginApi;
   const React = PluginApi.React;
 
-  PluginApi.patch.instead("ScenePlayer", function (props: any, _: any, original: any) {
+  PluginApi.patch.instead("ScenePlayer", function (props: any, _: any, Original: any) {
     const { data, error, loading } = PluginApi.utils.StashService.useConfiguration();
     
     const scene: SceneDataFragment = props.scene;
-
-    if (loading || error) {
-      return <></>;
-    }
 
     const embeddableURLsString = data.configuration.plugins?.embeddedScenePlayer?.urls ?? [];
     // turn it into an array
@@ -84,16 +80,20 @@ function parseEmbeddableURLs(urls: string) {
 
     // TODO - provide defaults
 
-    if (scene.files.length > 0) {
-      // use default player
-      return original(props);
-    }
-
     // check if any of the URLs are embeddable
     // TODO make this configurable
     const embeddableURL = React.useMemo(() => {
       return scene.urls.find((u) => urlEmbeddable(u, embeddableURLs));
     }, [scene.urls]);
+
+    if (scene.files.length > 0) {
+      // use default player
+      return <Original {...props} />;
+    }
+    
+    if (loading || error) {
+      return <></>;
+    }
 
     if (embeddableURL) {
       return (
@@ -103,6 +103,6 @@ function parseEmbeddableURLs(urls: string) {
       );
     }
 
-    return original(props);
+    return <Original {...props} />;
   });
 })();
