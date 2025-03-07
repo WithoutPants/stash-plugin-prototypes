@@ -31,13 +31,7 @@ jobs:
       run: |
         cd main/plugins/embeddedScenePlayer
         yarn build
-
-  build-site:
-    runs-on: ubuntu-22.04
-    needs: build
-    steps:
-    - run: |
-        cd main
+        cd ../..
         ./build_site.sh ../_site/main
     - uses: actions/upload-pages-artifact@v3
     
@@ -46,7 +40,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-22.04
-    needs: build-site
+    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
