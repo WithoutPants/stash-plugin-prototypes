@@ -23,15 +23,19 @@ jobs:
         path: main
         ref: main
         fetch-depth: '0'
-    - name: Pre-install
+    - name: Embedded Scene Player
       run: |
         cd main/plugins/embeddedScenePlayer
         yarn install --frozen-lockfile
+        yarn build
+    - name: Quick Sentiment
+      run: |
+        cd main/plugins/quickSentiment
+        yarn install --frozen-lockfile
+        yarn build
     - name: Build
       run: |
-        cd main/plugins/embeddedScenePlayer
-        yarn build
-        cd ../..
+        cd main
         ./build_site.sh ../_site/main
     - uses: actions/upload-pages-artifact@v3
     

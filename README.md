@@ -21,3 +21,15 @@ The embeddable URLs must be configured before using. This setting is found in `S
 ![Config](images/embed-scene-player-settings.png?raw=true "Config")
 
 After this is configured, create file-less scenes, filling in the URL with the embed link, and the scene player will be replaced with an embedded player.
+
+### Quick Sentiment
+
+This plugin adds two buttons to the Scene card, for quickly adding Favorite or Watch Later tags to the Scene. 
+
+![Quick Sentiment](images/quick-sentiment.png?raw=true "Quick Sentiment")
+
+**Usage:**
+
+The tag IDs for Favorite and Watch Later must be configured before using. These settings are found in `Settings > Plugins > Quick Sentiment > Favorite Tag ID` and `Settings > Plugins > Quick Sentiment > Watch Later Tag ID`. These settings must be the numeric IDs of the tags to apply.
+
+Clicking on the applicable button will toggle the respective tag on the Scene.

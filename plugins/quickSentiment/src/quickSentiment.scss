@@ -1,0 +1,32 @@
+.scene-card .plugin-quick-sentiment {
+  bottom: 2rem;
+  position: absolute;
+  right: 0;
+
+  .watch-later {
+    color: #137cbd;
+  }
+
+  // button.btn.favorite-button {
+  //   &:hover,
+  //   &:active {
+  //     opacity: 0.75;
+  //     transition: opacity 0.5s;
+  //   }
+  // }
+}
+
+.plugin-quick-sentiment .favorite-button.not-favorite {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.scene-card {
+  &:hover,
+  &:active {
+    .plugin-quick-sentiment .favorite-button.not-favorite {
+      opacity: 1;
+      transition: opacity 0.5s;
+    }
+  }
+}
