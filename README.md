@@ -33,3 +33,7 @@ This plugin adds two buttons to the Scene card, for quickly adding Favorite or W
 The tag IDs for Favorite and Watch Later must be configured before using. These settings are found in `Settings > Plugins > Quick Sentiment > Favorite Tag ID` and `Settings > Plugins > Quick Sentiment > Watch Later Tag ID`. These settings must be the numeric IDs of the tags to apply.
 
 Clicking on the applicable button will toggle the respective tag on the Scene.
+
+### shelve
+
+(WIP) This plugin moves (shelves) files to paths based on their applicable metadata, according to a set of rules. The rules are defined in the settings. It offers a task to process and move files, and the plugin may be configured to automatically move files to the appropriate shelf when they are added to the library.
