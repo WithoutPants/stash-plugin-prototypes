@@ -1,5 +1,5 @@
 name: shelve
-description: Moves files based on object metadata
+description: "[EXPERIMENTAL - use at own risk] Moves files based on object metadata"
 url: https://github.com/WithoutPants/stash-plugin-prototypes
 version: 0.1
 ui:
@@ -8,47 +8,25 @@ ui:
   css:
   - shelve.css
 
-settings:
-  scene_rules:
-    displayName: Scene Rules
-    type: STRING
+# settings:
+#   scene_rules:
+#     displayName: Scene Rules
+#     type: STRING
 
 exec:
   - shelve.js
 interface: js
-tasks:
-  - name: shelve all files (dry run)
-    description: Runs the shelve process to move files based on metadata. Does not actually move files.
-    defaultArgs:
-      dry: yes
+# tasks:
+#   - name: shelve all files (dry run)
+#     description: Runs the shelve process to move files based on metadata. Does not actually move files.
+#     defaultArgs:
+#       dry: yes
 # hooks:
-#   - name: Log scene marker create/update
-#     description: Logs some stuff when creating/updating scene marker.
+#   - name: Rename scene files on create/update
+#     description: Renames scene files based on metadata.
 #     triggeredBy: 
-#       - SceneMarker.Create.Post
-#       - SceneMarker.Update.Post
-#       - SceneMarker.Delete.Post
 #       - Scene.Create.Post
 #       - Scene.Update.Post
-#       - Scene.Destroy.Post
-#       - Image.Create.Post
-#       - Image.Update.Post
-#       - Image.Destroy.Post
-#       - Gallery.Create.Post
-#       - Gallery.Update.Post
-#       - Gallery.Destroy.Post
-#       - Movie.Create.Post
-#       - Movie.Update.Post
-#       - Movie.Destroy.Post
-#       - Performer.Create.Post
-#       - Performer.Update.Post
-#       - Performer.Destroy.Post
-#       - Studio.Create.Post
-#       - Studio.Update.Post
-#       - Studio.Destroy.Post
-#       - Tag.Create.Post
-#       - Tag.Update.Post
-#       - Tag.Destroy.Post
 #     defaultArgs:
 #       mode: hook
     

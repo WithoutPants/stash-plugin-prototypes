@@ -33,6 +33,11 @@ jobs:
         cd main/plugins/quickSentiment
         yarn install --frozen-lockfile
         yarn build
+    - name: Shelve
+      run: |
+        cd main/plugins/shelve
+        mkdir dist
+        cp shelve* dist/
     - name: Build
       run: |
         cd main

@@ -34,6 +34,113 @@ The tag IDs for Favorite and Watch Later must be configured before using. These 
 
 Clicking on the applicable button will toggle the respective tag on the Scene.
 
-### shelve
+### shelve (experimental - use at own risk!)
 
-(WIP) This plugin moves (shelves) files to paths based on their applicable metadata, according to a set of rules. The rules are defined in the settings. It offers a task to process and move files, and the plugin may be configured to automatically move files to the appropriate shelf when they are added to the library.
+This is a power tool to move files to paths based on their metadata. 
+
+**Caveats:**
+- supports moving scenes files only
+- runs only if a scene has a single file associated
+- runs for linux-style paths only
+
+**Usage:**
+
+Currently must be run manually via the GraphQL playground.
+
+Example:
+```
+mutation {
+  runPluginTask(plugin_id: "shelve", 
+    args_map: {
+      scene_rules: [
+		{ 
+          filter: {
+            path: {
+              modifier:"INCLUDES"
+              value: "foo"
+            },
+            studios: {
+              modifier:"NOT_NULL"
+              value: ""
+            }
+          },
+          path: "/home/WithoutPants/media/video/{studio.name}-{basename}"
+        }
+      ]
+      rename: true
+    }
+  )
+}
+```
+
+This will move all scene files with a path that includes "foo" and a studio to the path `/home/WithoutPants/media/video/{studio.name}-{basename}`. The `{studio.name}` and `{basename}` will be replaced with the studio name and the basename of the file, respectively.
+
+`path` field will replace `{<field>}` with the value of the field in the scene. For scenes, the following fields are available:
+```
+id
+title
+code
+details
+director
+urls
+date
+rating100
+organized
+interactive
+interactive_speed
+
+files {
+  id
+  path
+  width
+  height
+}
+
+galleries {
+  id
+  files {
+    path
+  }
+  folder {
+    path
+  }
+  title
+}
+
+studio {
+  id
+  name
+}
+
+groups {
+  group {
+    id
+    name
+  }
+  scene_index
+}
+
+tags {
+  id
+  name
+}
+
+performers {
+  id
+  name
+  disambiguation
+  gender
+}
+```
+
+Where a field is an array, it will resolve to the first item in the array. For example, `tags.name` will resolve to the name of the first tag on the scene.
+
+Additionally, the following fields are available:
+```
+basename (original file name including the extension)
+ext (original file extension including the dot)
+resolution (using same string as the UI - ie 1080p, 4K etc)
+```
+
+<!--(WIP) This plugin moves (shelves) files to paths based on their applicable metadata, according to a set of rules. The rules are defined in the settings. It offers a task to process and move files, and the plugin may be configured to automatically move files to the appropriate shelf when they are added to the library. -->
+

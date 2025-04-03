@@ -1,4 +1,42 @@
-function run(dry) {
+// Plugin input:
+// {
+//     "scene_rules": [
+//         {
+//             "filter": { /* filter */ },
+//             "path": "/media/studios/{studio.name}/{basename}"
+//         },
+//         ...
+//     ],
+//     "rename": true | false // defaults to false
+//     "useConfig": true | false
+// }
+
+// Example usage:
+/*
+mutation {
+  runPluginTask(plugin_id: "shelve", 
+    args_map: {
+      scene_rules: [
+				{ 
+          filter: {
+            path: {
+              modifier:"INCLUDES"
+              value: "issue4738"
+            },
+            studio: {
+              modifier: "NOT_NULL"
+            }
+          },
+          path: "/home/WithoutPants/media/video/{studio.name}-{basename}"
+        }
+      ]
+      rename: true
+    }
+  )
+}
+*/
+
+function runScenes(rules, rename) {
   // TODO get the rules
   // var rules = [
   //     { 
@@ -26,6 +64,12 @@ function run(dry) {
       //     path: "/media/tags/{tags.name}/{basename}"
       // }
   // ];
+  
+
+  rules.forEach(runSceneRule(rename));
+}
+
+function runUsingSceneConfig(rename) {
   let rules = [];
 
   let cfg = getConfig();
@@ -39,7 +83,7 @@ function run(dry) {
     }
   }
 
-  rules.forEach(runRule(dry));
+  runScenes(rules, rename);
 }
 
 // TODO - get all fields of relationships
@@ -91,6 +135,8 @@ interactive_speed
 files {
   id
   path
+  width
+  height
 }
 
 galleries {
@@ -132,6 +178,16 @@ performers {
 
 const findScenes = doGQL(findScenesGQL);
 
+const moveFilesGQL = `
+mutation MoveFiles(
+  $input: MoveFilesInput!
+) {
+  moveFiles(input: $input)
+}
+`;
+
+const moveFiles = doGQL(moveFilesGQL);
+
 function onlyUnique(value, index, array) {
   return array.indexOf(value) === index;
 }
@@ -160,28 +216,98 @@ function resolveToken(obj, key) {
   return resolveToken(obj[keys[0]], leftover);
 }
 
+function dir(path) {
+  // TODO - handle windows paths
+  return path.split('/').slice(0, -1).join('/');
+}
+
+function basename(path) {
+  // TODO - handle windows paths
+  return path.split('/').pop();
+}
+
+function ext(path) {
+  return `.${basename(path).split('.').pop()}`;
+}
+
+// from UI
+const resolution = (width, height) => {
+  const number = width > height ? height : width;
+  if (number >= 6144) {
+    return "HUGE";
+  }
+  if (number >= 3840) {
+    return "8K";
+  }
+  if (number >= 3584) {
+    return "7K";
+  }
+  if (number >= 3000) {
+    return "6K";
+  }
+  if (number >= 2560) {
+    return "5K";
+  }
+  if (number >= 1920) {
+    return "4K";
+  }
+  if (number >= 1440) {
+    return "1440p";
+  }
+  if (number >= 1080) {
+    return "1080p";
+  }
+  if (number >= 720) {
+    return "720p";
+  }
+  if (number >= 540) {
+    return "540p";
+  }
+  if (number >= 480) {
+    return "480p";
+  }
+  if (number >= 360) {
+    return "360p";
+  }
+  if (number >= 240) {
+    return "240p";
+  }
+  if (number >= 144) {
+    return "144p";
+  }
+};
+
 function getNewScenePath(rule, scene) {
   var path = rule.path;
-  var basename = scene.files[0].path.split('/').pop();
-  path = path.replace('{basename}', basename);
+  // TODO - handle windows paths
+  var existingPath = scene.files[0].path;
+  var bn = basename(existingPath);
+  var xt = ext(existingPath);
+  path = path.replaceAll('{basename}', bn);
+  path = path.replaceAll('{ext}', xt);
+  path = path.replaceAll('{resolution}', resolution(scene.files[0].width, scene.files[0].height));
 
   var tokenStrings = getTokens(path);
   tokenStrings.forEach((key) => {
       var token = key.substring(1, key.length - 1);
-      var value = resolveToken(scene, token);
-      if (!value) {
-          throw new Error(`Key ${token} resolved to an empty value for path ${rule.path}`);
-          // log.Error(`Key ${key} resolved to an empty value for path ${rule.path}`)
-          // errored = true;
-          // return;
+      try {
+        var value = resolveToken(scene, token);
+        if (!value) {
+            throw new Error(`Key ${token} resolved to an empty value for path ${rule.path}`);
+            // log.Error(`Key ${key} resolved to an empty value for path ${rule.path}`)
+            // errored = true;
+            // return;
+        }
+        path = path.replaceAll(key, value);
+      } catch (err) {
+        throw new Error(`Error resolving token ${key} for path ${rule.path}: ${err}`);  
       }
-      path = path.replace(key, value);
   });
 
   return path;
 }
 
-function runRule(dry) {
+function runSceneRule(rename) {
   return (rule) => {
       let filter = { ...rule.filter }
       
@@ -229,19 +355,49 @@ function runRule(dry) {
 
           // TODO - if scene has already been moved, skip
 
-          const dryRun = dry ? "[DRY RUN]: " : "";
+          // if path is already in the correct place, skip
+          if (path === scenePath) {
+              log.Debug(`Scene ${scenePath} already in correct place`);
+              return;
+          }
+
+          const dryRun = !rename ? "[DRY RUN]: " : "";
           log.Info(`${dryRun}Moving scene ${scenePath} to ${path}`);
 
-          // TODO - move it
+          // move it
+          if (!rename) {
+            return;
+          }
+
+          moveFiles({
+            input: {
+                ids: [scene.files[0].id],
+                destination_folder: dir(path),
+                destination_basename: basename(path)
+            }
+          });
       });
   };
 }
 
 
 function main() {
-  var dry = input.Args.dry;
+  log.Info("Shelve plugin started: " + JSON.stringify(input.Args));
+  var rename = input.Args.rename ?? false;
 
-  run(dry);
+  var useConfig = input.Args.useConfig;
+
+  if (useConfig) {
+    runUsingSceneConfig(rename);
+    return { Output: "ok" };
+  }
+
+  var rules = input.Args.scene_rules ?? [];
+  log.Info(`Running using provided ${rules.length} rules`);
+
+  if (rules.length > 0) {
+    runScenes(rules, rename);
+  }
 
   return {
       Output: "ok"
