@@ -369,13 +369,18 @@ function runSceneRule(rename) {
             return;
           }
 
-          moveFiles({
-            input: {
-                ids: [scene.files[0].id],
-                destination_folder: dir(path),
-                destination_basename: basename(path)
-            }
-          });
+          try {
+            moveFiles({
+              input: {
+                  ids: [scene.files[0].id],
+                  destination_folder: dir(path),
+                  destination_basename: basename(path)
+              }
+            });
+          } catch (err) {
+            log.Error(`Error moving scene ${scenePath} to ${path}: ${err}`);
+            return;
+          }
       });
   };
 }
