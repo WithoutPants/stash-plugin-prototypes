@@ -38,6 +38,11 @@ jobs:
         cd main/plugins/shelve
         mkdir dist
         cp shelve* dist/
+    - name: ShelveUI
+      run: |
+        cd main/plugins/shelveUI
+        npm install --frozen-lockfile
+        npm run build
     - name: Build
       run: |
         cd main

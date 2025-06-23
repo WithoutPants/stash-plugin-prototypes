@@ -144,3 +144,14 @@ resolution (using same string as the UI - ie 1080p, 4K etc)
 
 <!--(WIP) This plugin moves (shelves) files to paths based on their applicable metadata, according to a set of rules. The rules are defined in the settings. It offers a task to process and move files, and the plugin may be configured to automatically move files to the appropriate shelf when they are added to the library. -->
 
+### Shelve UI
+
+Provides a UI for bulk renaming scene files based on metadata. This plugin is a work in progress and may not be fully functional.
+
+![Shelve UI](images/shelve-ui.png?raw=true "Shelve UI")
+
+**Usage:**
+
+Very basic filtering is provided. You can then enter the path pattern to use for renaming files. The path pattern can include metadata fields, such as `{scene.title}`, `{scene.studio.name}`, etc. The available fields are the same as those in the shelve plugin.
+
+Currently, only the individual `Apply` and `Edit` buttons are functional. The `Apply Selected` button does not currently do anything. 
